@@ -1,0 +1,117 @@
+<nz-space>
+  <ng-container>
+    <button
+      [nzLoading]="loading"
+      [appPermission]="TEMPLATE_OPINION_RIGHTS.ADD"
+      *nzSpaceItem
+      nz-button
+      nzType="primary"
+      class="!flex !items-center"
+      (click)="submitFormData()"
+    >
+      <span nz-icon nzType="save" nzTheme="outline"></span>Lưu
+    </button>
+    <button
+      [nzLoading]="loading"
+      [appPermission]="TEMPLATE_OPINION_RIGHTS.DELETE"
+      *nzSpaceItem
+      nz-button
+      nzType="primary"
+      class="!flex !items-center"
+      (click)="deleteUncheckedOpinion()"
+    >
+      <span nz-icon nzType="delete" nzTheme="outline"></span>Xóa
+    </button>
+  </ng-container>
+</nz-space>
+<div nz-row [nzGutter]="16">
+  <div nz-col nzSpan="12" style="display: block">
+    <div>
+      <nz-input-group [nzSuffix]="suffixIcon">
+        <input
+          type="text"
+          nz-input
+          [(ngModel)]="searchValue"
+          (ngModelChange)="searchOrganize(searchValue)"
+          placeholder="Tìm kiếm đơn vị"
+        />
+      </nz-input-group>
+      <ng-template #suffixIcon>
+        <span nz-icon nzType="search"></span>
+      </ng-template>
+    </div>
+    <div>
+      <nz-tree
+        #treeOrganize
+        [nzData]="organizeNodes"
+        [nzSearchValue]="searchValue"
+        nzCheckable
+        nzBlockNode
+        (nzCheckBoxChange)="onOrganizeCheckChange($event)"
+        (nzClick)="onOrganizeNodeClick($event)"
+        [nzExpandedIcon]="multiExpandedIconTpl"
+        (nzSearchValueChange)="nzEvent($event)"
+      >
+        <ng-template #nzTreeTemplate let-node>
+          <span [class.selected-org]="node.key === selectedOrgCode">{{
+            node.title
+          }}</span>
+          <span
+            style="color: #00cc00"
+            *ngIf="previouslyCheckedOrgs.includes(node.key)"
+          >
+            (Đã chọn)</span
+          >
+          <span style="color: #eead0e" *ngIf="node.key === newlyCheckedOrg">
+            (Đang chọn)</span
+          >
+        </ng-template>
+      </nz-tree>
+    </div>
+  </div>
+  <div nz-col nzSpan="12" style="display: block">
+    <div>
+      <nz-input-group [nzSuffix]="suffixIcon">
+        <input
+          type="text"
+          nz-input
+          [(ngModel)]="searchValueOpinion"
+          (ngModelChange)="searchOpinionList(searchValueOpinion)"
+          placeholder="Tìm kiếm kiến nghị"
+        />
+      </nz-input-group>
+      <ng-template #suffixIcon>
+        <span nz-icon nzType="search"></span>
+      </ng-template>
+    </div>
+    <div>
+      <nz-tree
+        #treeOpinionList
+        [nzData]="opinionNodes"
+        [nzCheckStrictly]="true"
+        [nzSearchValue]="searchValueOpinion"
+        nzCheckable
+        nzBlockNode
+        [nzExpandAll]="true"
+        (nzOnDrop)="nzEvent($event)"
+        (nzCheckBoxChange)="onOpinionCheckChange($event)"
+        [nzExpandedIcon]="multiExpandedIconTpl"
+        (nzSearchValueChange)="nzEvent($event)"
+      >
+        <ng-template #nzTreeTemplate let-node>
+          <span>{{ node.title }}</span>
+        </ng-template>
+      </nz-tree>
+    </div>
+  </div>
+</div>
+
+<ng-template #multiExpandedIconTpl let-node let-origin="origin">
+  <span
+    *ngIf="node.children?.length > 0"
+    nz-icon
+    [nzType]="node.isExpanded ? 'caret-down' : 'caret-right'"
+    nzTheme="outline"
+    class="ant-tree-switcher-line-icon icon-tree"
+  ></span>
+</ng-template>

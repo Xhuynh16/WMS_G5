@@ -1,0 +1,45 @@
+nz-divider {
+    color: #333;
+    font-weight: normal;
+  }
+  .inner-box-2 {
+    padding: 8px;
+    height: 102px;
+    box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
+  }
+  .content{
+    overflow-y: scroll;
+    overflow-x: hidden;
+    padding: 0px 12px;
+    height: calc(100vh - 76px);
+  }
+  .ant-divider-horizontal.ant-divider-with-text {
+    margin: 22px 0;
+  }
+  .icon-dashboard{
+    font-size: 34px;
+    margin: 26px 14px;
+  }
+  .text-dashboard{
+    text-align: right;
+    padding-right: 12px;
+  }
+  .text-dashboard-des{
+    font-size: 16px;
+  }
+  .text-dashboard-sum{
+    font-size: 32px;
+    font-weight: bold;
+  }
+  .gutter-row-2{
+    color: white;
+  }
+  .space-form{
+    margin-bottom: 12px;
+  }
+  .chart-container {
+    margin-top: 24px;
+  }
+  .mt-4 {
+    margin-top: 24px;
+  }

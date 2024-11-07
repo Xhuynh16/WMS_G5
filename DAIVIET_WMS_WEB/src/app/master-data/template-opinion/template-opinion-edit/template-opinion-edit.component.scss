@@ -1,0 +1,18 @@
+.custom-checkbox {
+  display: flex;
+  align-items: center;
+  input {
+    cursor: pointer;
+  }
+}
+.icon-tree {
+  font-size: 10px;
+}
+.ant-row {
+  margin-bottom: 16px; /* Thêm khoảng cách giữa các hàng */
+}
+
+.ant-col {
+  display: flex;
+  justify-content: center;
+}

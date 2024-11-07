@@ -1,0 +1,94 @@
+<div class="content">
+    <nz-divider nzOrientation="left" nzText="BÁO CÁO TÌNH TRẠNG KHO"></nz-divider>
+    <div nz-row [nzGutter]="{ xs: 8, sm: 16, md: 24, lg: 32 }">
+        <div nz-col class="gutter-row gutter-row-2" [nzSpan]="8">
+            <div class="inner-box inner-box-2" style="background-color: #32c5d2;">
+                <div nz-row nzJustify="start">
+                    <div nz-col nzSpan="4"><span nz-icon nzType="file" nzTheme="outline" class="icon-dashboard"></span>
+                    </div>
+                    <div nz-col nzSpan="20" class="text-dashboard">
+                        <div class="text-dashboard-sum">54</div>
+                        <div class="text-dashboard-des">Hàng tồn kho</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div nz-col class="gutter-row gutter-row-2" [nzSpan]="8">
+            <div class="inner-box inner-box-2" style="background: #c49f47;">
+                <div nz-row nzJustify="start">
+                    <div nz-col nzSpan="4"><span nz-icon nzType="file-sync" nzTheme="outline"
+                            class="icon-dashboard"></span></div>
+                    <div nz-col nzSpan="20" class="text-dashboard">
+                        <div class="text-dashboard-sum">16</div>
+                        <div class="text-dashboard-des">Tổng số yêu cầu xuất kho chờ phê duyệt</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div nz-col class="gutter-row gutter-row-2" [nzSpan]="8">
+            <div class="inner-box inner-box-2" style="background-color: #32c5d2;">
+                <div nz-row nzJustify="start">
+                    <div nz-col nzSpan="4"><span nz-icon nzType="file-text" nzTheme="outline"
+                            class="icon-dashboard"></span></div>
+                    <div nz-col nzSpan="20" class="text-dashboard">
+                        <div class="text-dashboard-sum">08</div>
+                        <div class="text-dashboard-des">Tổng số yêu cầu nhập kho chờ phê duyệt</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <nz-divider nzOrientation="left" nzText="THỐNG KÊ TỒN KHO"></nz-divider>
+    <div nz-row [nzGutter]="{ xs: 8, sm: 16, md: 24, lg: 32 }">
+        <div nz-col class="gutter-row gutter-row-2" [nzSpan]="6">
+            <div class="inner-box inner-box-2" style="background-color: #32c5d2;">
+                <div nz-row nzJustify="start">
+                    <div nz-col nzSpan="4"><span nz-icon nzType="align-left" nzTheme="outline"
+                            class="icon-dashboard"></span></div>
+                    <div nz-col nzSpan="20" class="text-dashboard">
+                        <div class="text-dashboard-sum">12</div>
+                        <div class="text-dashboard-des">Tổng số sự cố phát sinh</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div nz-col class="gutter-row gutter-row-2" [nzSpan]="6">
+            <div class="inner-box inner-box-2" style="background: #c49f47;">
+                <div nz-row nzJustify="start">
+                    <div nz-col nzSpan="4"><span nz-icon nzType="bar-chart" nzTheme="outline"
+                            class="icon-dashboard"></span></div>
+                    <div nz-col nzSpan="20" class="text-dashboard">
+                        <div class="text-dashboard-sum">17</div>
+                        <div class="text-dashboard-des">Tổng số lệnh trễ hạn</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div nz-col class="gutter-row gutter-row-2" [nzSpan]="6">
+            <div class="inner-box inner-box-2" style="background-color: #32c5d2;">
+                <div nz-row nzJustify="start">
+                    <div nz-col nzSpan="4"><span nz-icon nzType="apartment" nzTheme="outline"
+                            class="icon-dashboard"></span></div>
+                    <div nz-col nzSpan="20" class="text-dashboard">
+                        <div class="text-dashboard-sum">10</div>
+                        <div class="text-dashboard-des">Tổng số lệnh đang thực hiện</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div nz-col class="gutter-row gutter-row-2" [nzSpan]="6">
+            <div class="inner-box inner-box-2" style="background-color: #32c5d2;">
+                <div nz-row nzJustify="start">
+                    <div nz-col nzSpan="4"><span nz-icon nzType="database" nzTheme="outline"
+                            class="icon-dashboard"></span></div>
+                    <div nz-col nzSpan="20" class="text-dashboard">
+                        <div class="text-dashboard-sum">03</div>
+                        <div class="text-dashboard-des">Tổng số lệnh mới</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    <app-dashboardchart></app-dashboardchart>
+</div>  
