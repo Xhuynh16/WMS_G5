@@ -7,6 +7,7 @@ import {PaginationResult} from '../../models/base.model';
 import {FormGroup, Validators, NonNullableFormBuilder} from '@angular/forms';
 import { ProductService } from '../../services/master-data/product.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-import',
   standalone: true,
@@ -16,12 +17,17 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 })
 export class ImportComponent {
   validateForm: FormGroup = this.fb.group({
-    id: ['', [Validators.required]],
+    id: [''],
     name: ['', [Validators.required]],
     status: ['', [Validators.required]],
-    productCode: ['', [Validators.required]],
+    type: [''],
+    address: ['', Validators.required],
+    note: ['', [Validators.required]],
+    details: [[]],
     isActive: [true, [Validators.required]],
   });
+  value: string = ''
+  totalAmount: number = 0;
   lstProduct: any[] =[]
   selectedProducts: any[] = [];
   isSubmit: boolean = false;
@@ -35,7 +41,8 @@ export class ImportComponent {
     private fb: NonNullableFormBuilder,
     private globalService: GlobalService,
     private _productSv: ProductService,
-    private message: NzMessageService
+    private message: NzMessageService,
+    private router: Router,
   ) {
     this.globalService.setBreadcrumb([
       {
@@ -50,7 +57,6 @@ export class ImportComponent {
 
   ngOnDestroy() {
     this.globalService.setBreadcrumb([]);
-    
   }
 
   ngOnInit(): void {
@@ -60,7 +66,6 @@ export class ImportComponent {
   getAllProduct(){
     this._productSv.getall().subscribe({
       next: (data) => {
-        console.log(data)
         this.lstProduct = data
       }
 
@@ -101,9 +106,17 @@ export class ImportComponent {
 
   submitForm(): void {
     this.isSubmit = true;
+    let formData = this.validateForm.value;
+    formData.details = this.selectedProducts.map(product => ({
+      product_id: product.code|| '', 
+      quantity_Change: product.quantity_Change || '1', 
+      note: product.note || ''
+    })),
+    formData.status = '01';
+    formData.type = 'X';
     if (this.validateForm.valid) {
       if (this.edit) {
-        this._service.updateImport(this.validateForm.getRawValue()).subscribe({
+        this._service.updateImport(formData).subscribe({
           next: (data) => {
             this.search();
           },
@@ -112,7 +125,8 @@ export class ImportComponent {
           },
         });
       } else {
-        this._service.createImport(this.validateForm.getRawValue()).subscribe({
+        console.log(formData)
+        this._service.createImport(formData).subscribe({
           next: (data) => {
             this.search();
           },
@@ -130,7 +144,11 @@ export class ImportComponent {
       });
     }
   }
-  
+  calculateTotalAmount() {
+    this.totalAmount = this.selectedProducts.reduce((sum, product) => {
+      return sum + (product.quantity * product.sellingPrice);
+    }, 0);
+  }
 
   close() {
     this.visible = false;
@@ -163,18 +181,21 @@ export class ImportComponent {
     });
   }
 
-  openEdit(data: {code: string; name: string;status: string; productCode: string; isActive: boolean}) {
-    this.validateForm.setValue({
-      code: data.code,
-      name: data.name,
-      status: data.status,
-      productCode: data.productCode,
-      isActive: data.isActive,
+  openEdit(data: {id: string}) {
+    this._service.getDataDetails(data.id).subscribe({
+      next: (result) => {
+        if (result) { // Log toàn bộ kết quả trả về từ API
+          this.router.navigate(['/business/import-details', data.id], {
+            state: { ListData: result },  // Pass the whole object
+          });
+        } else {
+          console.warn("No data found for the given code.");
+        }
+      },
+      error: (error) => {
+        console.error("API call failed: ", error);  // Log chi tiết lỗi
+      },
     });
-    setTimeout(() => {
-      this.edit = true;
-      this.visible = true;
-    }, 200);
   }
 
   pageSizeChange(size: number): void {
@@ -190,11 +211,11 @@ export class ImportComponent {
   onProductDoubleClick(product: any) {
     // Tìm sản phẩm trong danh sách đã chọn
     const existingProduct = this.selectedProducts.find(p => p.code === product.code);
-    console.log(existingProduct)
     if (existingProduct) {
       // Nếu sản phẩm đã tồn tại, chỉ tăng số lượng
       if (existingProduct.quantity < product.stock) {
         existingProduct.quantity += 1;
+        this.calculateTotalAmount();
       } else {
         // Có thể thêm thông báo khi vượt quá số lượng tồn
         this.message.warning('Số lượng không thể vượt quá tồn kho!');
@@ -207,8 +228,10 @@ export class ImportComponent {
         type: product.type,
         stock: product.stock,
         currency: product.currency,
+        sellingPrice: product.sellingPrice,
         quantity: 1
       });
+      this.calculateTotalAmount();
     }
   }
 
@@ -218,12 +241,14 @@ export class ImportComponent {
     // Kiểm tra số lượng mới không vượt quá tồn kho và không nhỏ hơn 1
     if (newQuantity >= 1 && newQuantity <= product.stock) {
       product.quantity = newQuantity;
+      this.calculateTotalAmount();
     }
   }
 
   // Xóa sản phẩm khỏi phiếu xuất
   removeProduct(index: number) {
     this.selectedProducts.splice(index, 1);
+    this.calculateTotalAmount();
   }
 }
 

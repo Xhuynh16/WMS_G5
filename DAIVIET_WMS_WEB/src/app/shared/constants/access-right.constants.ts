@@ -156,3 +156,13 @@ export enum DRIVER_RIGHTS {
   EDIT = 'R4',
   DELETE = 'R4',
 }
+//Xuất nhập kho
+export enum IMPORT_RIGHTS {
+  XEM = 'RP1.1',
+  TRINH_DUYET = 'RP1.2',
+  YEU_CAU_CHINH_SUA = 'RP1.3',
+  PHE_DUYET = 'RP1.4',
+  TU_CHOI = 'RP1.5',
+  CHINH_SUA = 'RP1.6',
+  IN_PHIEU = 'RP1.7',
+}

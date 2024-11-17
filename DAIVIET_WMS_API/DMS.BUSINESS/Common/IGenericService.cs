@@ -6,6 +6,7 @@ namespace DMS.BUSINESS.Common
     public interface IGenericService<TEntity, TDto> : IBaseService where TEntity : BaseEntity where TDto : class
     {
         Task<PagedResponseDto> Search(BaseFilter filter);
+        Task<PagedResponseDto> SearchEx(BaseFilter filter);
         Task<IList<TDto>> GetAll();
         Task<IList<TDto>> GetAllActive();
         Task<TDto> GetById(object id);

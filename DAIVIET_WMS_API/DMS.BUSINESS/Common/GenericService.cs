@@ -51,7 +51,10 @@ namespace DMS.BUSINESS.Common
         {
             return Task.FromResult<PagedResponseDto>(new());
         }
-
+        public virtual Task<PagedResponseDto> SearchEx(BaseFilter filter)
+        {
+            return Task.FromResult<PagedResponseDto>(new());
+        }
         public virtual async Task<IList<TDto>> GetAll()
         {
             try

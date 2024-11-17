@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DMS.CORE.Entities.BU
 {
-    [Table("T_BU_IMPORT")]
+    [Table("T_BU_TICKETS")]
     public class TblBuImport : SoftDeleteEntity
     {
         [Key]
@@ -19,7 +19,11 @@ namespace DMS.CORE.Entities.BU
         public string Name { get; set; }
         [Column("STATUS", TypeName = "VARCHAR(50)")]
         public string Status { get; set; }
-        [Column("PRODUCT_CODE", TypeName = "VARCHAR(50)")]
-        public string ProductCode { get; set; }
+        [Column("TYPE", TypeName = "VARCHAR(50)")]
+        public string Type { get; set; }
+        [Column("ADDRESS", TypeName = "NVARCHAR(50)")]
+        public string Address { get; set; }
+        [Column("NOTE", TypeName = "NVARCHAR(250)")]
+        public string note { get; set; }
     }
 }

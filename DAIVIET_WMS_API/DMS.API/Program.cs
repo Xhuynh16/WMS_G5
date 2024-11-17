@@ -118,11 +118,11 @@ builder.Services.AddCors(options => options.AddPolicy("CorsPolicy",
         }));
 
 var app = builder.Build();
-if (!app.Environment.IsDevelopment())
-{
-    app.UseHangfireDashboard();
+//if (!app.Environment.IsDevelopment())
+//{
+  //  app.UseHangfireDashboard();
     using var scope = app.Services.CreateScope();
-    using var server = new BackgroundJobServer();
+   // using var server = new BackgroundJobServer();
     await scope.ServiceProvider.GetRequiredService<ISystemTraceService>().StartService();
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     var lstMessage = dbContext.TblAdMessage.ToList();
@@ -135,7 +135,7 @@ if (!app.Environment.IsDevelopment())
             Message = message.Value
         });
     }
-}
+//}
    
 // Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())

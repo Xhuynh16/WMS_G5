@@ -1,0 +1,174 @@
+<div class="container-list">
+    <div class="site-page-header-ghost-wrapper">
+        <nz-tabset nzSize="large">
+            <nz-tab nzTitle="THÔNG TIN PHIẾU XUẤT HÀNG">
+                <div>
+                    <nz-page-header nzBackIcon nzTitle="QUAY LẠI" class="site-page-header"><nz-page-header-extra>
+                            <nz-space [nzWrap]="true" class="gap-[5px]">
+                                <ng-container *ngIf="this.status == 'Khởi tạo'">
+                                    <button *nzSpaceItem nz-button (click)="showModal('02')" nzType="primary" class="!flex !items-center" style="margin-right: 15px;background-color: #696969;
+    border-color: #696969;"  [appPermission]="IMPORT_RIGHTS.TRINH_DUYET">
+                                        <span nz-icon nzType="send" nzTheme="outline"></span>Trình duyệt
+                                    </button>
+                                </ng-container>
+                                <ng-container *ngIf="this.status == 'Chờ xác nhận'">
+                                    <button *nzSpaceItem nz-button (click)="showModal('01')" nzType="default" class="!flex !items-center"
+                                        style="margin-right: 15px;  border-color: #DAA520; color: #DAA520" [appPermission]="IMPORT_RIGHTS.YEU_CAU_CHINH_SUA">
+                                        <span nz-icon nzType="exclamation-circle" nzTheme="outline"></span>Yêu cầu chỉnh
+                                        sửa
+                                    </button>
+                                </ng-container>
+                                <ng-container *ngIf="this.status == 'Chờ xác nhận'">
+                                    <button *nzSpaceItem nz-button (click)="showModal('03')" nzType="primary" class="!flex !items-center"
+                                        style="margin-right: 15px; background-color: #008B45;border-color: #008B45;" [appPermission]="IMPORT_RIGHTS.PHE_DUYET">
+                                        <span nz-icon nzType="check" nzTheme="outline"></span>Phê Duyệt
+                                    </button>
+                                </ng-container>
+                                <ng-container *ngIf="this.status == 'Đã phê duyệt'">
+                                    <button *nzSpaceItem nz-button (click)="showPrintModal()" nzType="primary" class="!flex !items-center"
+                                        style="margin-right: 15px; background-color: #DAA520;border-color: #DAA520;" [appPermission]="IMPORT_RIGHTS.IN_PHIEU">
+                                        <span nz-icon nzType="printer" nzTheme="outline"></span>In phiếu
+                                    </button>
+                                </ng-container>
+                                <ng-container *ngIf="this.status == 'Chờ xác nhận'">
+                                    <button *nzSpaceItem nz-button (click)="showModal('04')" nzType="primary" class="!flex !items-center"
+                                        style="margin-right: 15px; background-color: #EA4335;border-color: #EA4335;" [appPermission]="IMPORT_RIGHTS.TU_CHOI">
+                                        <span nz-icon nzType="close-circle" nzTheme="outline"></span>Từ chối
+                                    </button>
+                                </ng-container>
+                                <ng-container>
+                                    <button *nzSpaceItem nz-button nzType="primary" class="!flex !items-center" (click)="submitForm()" [appPermission]="IMPORT_RIGHTS.CHINH_SUA">
+                                        <span nz-icon nzType="save" nzTheme="outline"></span>Lưu Thông Tin
+                                    </button>
+                                </ng-container>
+                            </nz-space>
+                        </nz-page-header-extra>"edit ? ' Chỉnh sửa ' : ' Tạo mới '"
+                    </nz-page-header>
+                    <div nz-row [nzGutter]="16">
+                        <div nz-col class="gutter-row" [nzSpan]="12"
+                            style="padding: 12px; border: solid 1px #eeeeee;margin:12px">
+                            <h4>
+                                <span nz-icon nzType="info-circle" nzTheme="outline"
+                                    style="margin-right: 12px"></span>THÔNG
+                                TIN HÀNG HÓA
+                            </h4>
+                            <nz-table #borderedTable nzBordered [nzFrontPagination]="true" [nzPageSize]="3"
+                                [nzData]="lstProduct" [(nzPageIndex)]="pageIndex"
+                                (nzPageIndexChange)="onPageIndexChange($event)">
+                                <thead>
+                                    <tr>
+                                        <th nzAlign="center">Tên Mặt Hàng</th>
+                                        <th nzAlign="center">Số Lượng</th>
+                                        <th nzAlign="center">Đơn giá</th>
+                                        <th nzAlign="center">Thành Tiền</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let row of lstProduct | slice:(pageIndex - 1) * 3:pageIndex * 3">
+                                        <td nzAlign="center">{{row.product_id}}</td>
+                                        <td nzAlign="center">{{row.quantity_Change}}</td>
+                                        <td nzAlign="center">{{getPrice(row.product_id)}}</td>
+                                        <td nzAlign="center">{{row.quantity_Change * getPrice(row.product_id)}}</td>
+                                    </tr>
+                                </tbody>
+                            </nz-table>
+
+                            <div style="margin: 12px; text-align: end; border-top: solid 1px #eeeeee;">
+                                <span nz-icon nzType="money-collect" nzTheme="outline"></span>
+                                Tổng giá trị phiếu: {{ calculateTotalValue() | number }} VNĐ
+                            </div>
+                        </div>
+                        <div nz-col class="gutter-row" [nzSpan]="10"
+                            style="padding: 12px; border: solid 1px #eeeeee;margin:12px">
+                            <form nz-form nzLayout="vertical" [formGroup]="validateForm" (ngSubmit)="submitForm()">
+                                <h4>
+                                    <span nz-icon nzType="info-circle" nzTheme="outline"
+                                        style="margin-right: 12px"></span>THÔNG
+                                    TIN PHIẾU
+                                </h4>
+                                <div nz-row>
+                                    <div nz-col nzSpan="24" >
+                                        <app-input-clear placeholder="Nhập mã phiếu" [required]="true" label="Mã phiếu"
+                                            [control]="$any(validateForm).controls['id']" [required]="true"
+                                            [disabled]="true"></app-input-clear>
+                                    </div>
+                                    <div nz-col nzSpan="24" >
+                                        <app-input-clear placeholder="Nhập tên phiếu" [required]="true"
+                                            label="Tên phiếu" [control]="$any(validateForm).controls['name']"
+                                            [required]="true"></app-input-clear>
+                                    </div>
+                                    <div nz-col nzSpan="12" style="padding-right: 6px; margin-bottom: 6px;">
+                                        <label>Người Tạo</label>
+                                        <input nz-input [placeholder]="createBy" [disabled]="true" />
+                                    </div>
+                                    <div nz-col nzSpan="12" style="padding-right: 6px; margin-bottom: 6px;">
+                                        <label>Thời gian tạo</label>
+                                        <input nz-input  [placeholder]="createDate" [disabled]="true" />
+                                    </div>
+                                    <div nz-col nzSpan="12" style="padding-right: 6px;">
+                                        <app-input-clear placeholder="Địa chỉ giao hàng" [required]="true"
+                                            label="Địa chỉ" [control]="$any(validateForm).controls['address']"
+                                            [required]="true"></app-input-clear>
+                                    </div>
+                                    <div nz-col nzSpan="12" style="padding-right: 6px;">
+                                        <app-input-clear placeholder="Khởi tạo" [required]="true" label="Trạng thái"
+                                            [control]="$any(validateForm).controls['status']" [required]="true"
+                                            [disabled]="true"></app-input-clear>
+                                    </div>
+                                    <div nz-col nzSpan="24" style="padding-right: 6px;">
+                                        <app-input-clear [textArea]="true" class="full-width"
+                                            placeholder="Nhập ghi chú...." label="ghi chú"
+                                            [control]="$any(validateForm).controls['note']"></app-input-clear>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </nz-tab>
+        </nz-tabset>
+    </div>
+</div>
+<nz-modal [(nzVisible)]="isVisible" nzTitle="XÁC NHẬN THÔNG TIN"
+  (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()" nzOkText="Xác nhận" nzCancelText="Huỷ">
+  <ng-container *nzModalContent>
+    <div style="display: flex;justify-content: center; margin-bottom: 12px;">
+      <span style=" color: #faad14;" nz-icon nzType="question-circle" nzTheme="outline"></span>
+      <p style="padding-left: 8px; font-weight: 600; margin: 0;">{{ getModalMessage() }}</p>
+    </div>
+  </ng-container>
+</nz-modal>
+<nz-modal [(nzVisible)]="printModalVisible" nzTitle="In Phiếu" (nzOnCancel)="handleCancel()" (nzOnOk)="handlePrint()">
+    <ng-container *nzModalContent>
+      <div class="print-preview">
+        <!-- Nội dung phiếu in ấn sẽ được hiển thị tại đây -->
+        <h2>Phiếu Xuất Hàng</h2>
+        <p>Mã phiếu: {{ 'hehe' }}</p>
+        <p>Tên khách hàng: {{ createBy }}</p>
+        <p>Địa chỉ: {{ 'sdk' }}</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Sản phẩm</th>
+              <th>Số lượng</th>
+              <th>Đơn giá</th>
+              <th>Thành tiền</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of lstProduct">
+            <td nzAlign="center">{{item.product_id}}</td>
+            <td nzAlign="center">{{item.quantity_Change}}</td>
+              <td>{{getPrice(item.product_id)}}</td>
+              <td>{{item.quantity_Change * getPrice(item.product_id)}}</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>Tổng tiền:  {{ calculateTotalValue() | number }}</p>
+      </div>
+    </ng-container>
+  </nz-modal>
+  

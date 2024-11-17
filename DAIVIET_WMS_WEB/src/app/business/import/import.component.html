@@ -1,181 +1,221 @@
 <div class="container-list">
-    <div class="site-page-header-ghost-wrapper">
-      <nz-page-header nzBackIcon nzTitle="Nhập Kho" nzSubtitle="Danh sách Phiếu nhập hàng" class="site-page-header">
-        <nz-page-header-extra>
-          <nz-space [nzWrap]="true" class="gap-[5px]">
-            <nz-space>
-              <app-input-clear placeholder="Tìm kiếm" (enterEvent)="search()"
-                [(value)]="filter.keyWord"></app-input-clear>
-              <button (click)="search()" class="flex !items-center !border-l-0 gray-btn" nzType="default" nz-button
-                nzType="default">
-                <span nz-icon nzType="search"></span>
-              </button>
-              <button (click)="reset()" class="flex !items-center !border-l-0 gray-btn" nzType="default" nz-button
-                nzType="default">
-                <span nz-icon nzType="redo"></span>
-              </button>
-            </nz-space>
-            <button (click)="openCreate()" class="!flex !items-center" nzType="primary" nz-button
-        >
-              <span nz-icon nzType="plus-circle"></span> Thêm mới
+  <div class="site-page-header-ghost-wrapper">
+    <nz-page-header nzBackIcon nzTitle="DANH SÁCH PHIẾU XUẤT KHO" class="site-page-header">
+      <nz-page-header-extra>
+        <nz-space [nzWrap]="true" class="gap-[5px]">
+          <nz-space>
+            <app-input-clear placeholder="Tìm kiếm" (enterEvent)="search()"
+              [(value)]="filter.keyWord"></app-input-clear>
+            <button (click)="search()" class="flex !items-center !border-l-0 gray-btn" nzType="default" nz-button
+              nzType="default">
+              <span nz-icon nzType="search"></span>
             </button>
-            <button (click)="exportExcel()" class="!flex !items-center" nz-button nzType="primary" nzDanger
-            >
-              <span nz-icon nzType="file-excel"></span>Tải Excel
+            <button (click)="reset()" class="flex !items-center !border-l-0 gray-btn" nzType="default" nz-button
+              nzType="default">
+              <span nz-icon nzType="redo"></span>
             </button>
           </nz-space>
-        </nz-page-header-extra>
-      </nz-page-header>
-    </div>
-    <div class="overflow-auto flex-grow">
-      <nz-table [nzScroll]="{x: 'max-content'}" nzTableLayout="fixed" [nzShowPagination]="false"
-        [nzFrontPagination]="false" #headerTable [nzData]="paginationResult.data">
-        <thead>
-          <tr>
-            <th nzWidth="30px">STT</th>
-            <th [nzSortFn]="true" (nzSortOrderChange)="onSortChange('code', $event)" nzWidth="150px">Mã Phiếu</th>
-            <th [nzSortFn]="true" (nzSortOrderChange)="onSortChange('name', $event)">Tên</th>        
-            <th [nzSortFn]="true" (nzSortOrderChange)="onSortChange('status', $event)">Trạng thái</th>                         
-            <th [nzSortFn]="true" (nzSortOrderChange)="onSortChange('createBy', $event)">Người tạo</th>                         
-            <th [nzSortFn]="true" (nzSortOrderChange)="onSortChange('createDate', $event)">Ngày tạo phiếu</th>                         
-            <th nzWidth="120px" nzAlign="center">Hành động</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let data of headerTable.data; let i = index" (dblclick)="openEdit(data)">
-            <td>{{ (paginationResult.currentPage - 1) * paginationResult.pageSize + i + 1 }}</td>
-            <td>
-              <a (click)="openEdit(data)">{{ data.id }}</a>
-            </td>
-            <td>{{ data.name }}</td>
-            <td>{{ data.status }}</td>  
-            <td>{{ data.createBy }}</td>  
-            <td>{{ data.createDate | date: 'dd/MM/yyyy' }}</td>
-            <td nzAlign="center">
-              <span nz-popconfirm nzPopconfirmTitle="Bạn muốn xoá phiếu nhập này ?" nzPopconfirmPlacement="bottom"
-                (nzOnConfirm)="deleteItem(data.code)"
-                class="!text-red-500 cursor-pointer" nz-icon nzType="delete" nzTheme="outline"></span>
-            </td>
-          </tr>
-        </tbody>
-      </nz-table>
-    </div>
-    <div *ngIf="paginationResult?.data" class="flex justify-end p-[10px] border-t border-custom-gray border-solid">
-      <nz-pagination nzShowSizeChanger [nzPageIndex]="filter.currentPage" [nzTotal]="paginationResult.totalRecord"
-        [nzPageSize]="filter.pageSize" (nzPageIndexChange)="pageIndexChange($event)"
-        (nzPageSizeChange)="pageSizeChange($event)"></nz-pagination>
-    </div>
+          <button (click)="openCreate()" class="!flex !items-center" nzType="primary" nz-button>
+            <span nz-icon nzType="plus-circle"></span> Thêm mới
+          </button>
+          <button (click)="exportExcel()" class="!flex !items-center" nz-button nzType="primary" nzDanger>
+            <span nz-icon nzType="file-excel"></span>Tải Excel
+          </button>
+        </nz-space>
+      </nz-page-header-extra>
+    </nz-page-header>
   </div>
-  
-  <!--Create Update-->
-  <nz-drawer [nzMask]="!edit" nzWidth="90vw" [nzVisible]="visible" nzPlacement="right"
-    [nzTitle]="edit ? ' Chỉnh sửa  ' : ' Tạo mới  '" [nzExtra]="extra" (nzOnClose)="close()" >
-    <ng-container *nzDrawerContent>
-      <div nz-row nzGutter="24">
-        <!-- Phiếu xuất -->
-        <div nz-col nzSpan="12">
-          <nz-divider nzText="THÔNG TIN PHIẾU XUẤT" nzOrientation="left"></nz-divider>
-          <nz-table #selectedTable [nzData]="selectedProducts">
-            <thead>
-              <tr>
-                <th nzAlign="center">STT</th>
-                <th nzAlign="center">TÊN</th>
-                <th nzAlign="center">LOẠI</th>
-                <th nzAlign="center">SỐ LƯỢNG</th>
-                <th nzAlign="center">ĐƠN VỊ TÍNH</th>
-                <th nzAlign="center">THAO TÁC</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let data of selectedProducts; let i = index">
-                <td nzAlign="center">{{i+1}}</td>
-                <td nzAlign="center">{{ data.name }}</td>
-                <td nzAlign="center">{{ data.type }}</td>
-                <td nzAlign="center">
-                  <nz-input-group nzCompact>
-                    <button nz-button 
-                            (click)="onQuantityChange(data, -1)"
-                            [disabled]="data.quantity <= 1">
-                      <i nz-icon nzType="minus"></i>
-                    </button>
-                    <input nz-input 
-                           type="number" 
-                           [(ngModel)]="data.quantity" 
-                           style="width: 50px; text-align: center;"
-                           [max]="data.stock"
-                           [min]="1">
-                    <button nz-button 
-                            (click)="onQuantityChange(data, 1)"
-                            [disabled]="data.quantity >= data.stock">
-                      <i nz-icon nzType="plus"></i>
-                    </button>
-                  </nz-input-group>
-                </td>
-                <td nzAlign="center">{{ data.currency }}</td>
-                <td nzAlign="center">
-                  <button nz-button 
-                          nzType="link" 
-                          nzDanger 
-                          (click)="removeProduct(i)">
-                    <i nz-icon nzType="delete"></i>
+  <div class="overflow-auto flex-grow">
+    <nz-table [nzBordered]="true" [nzScroll]="{x: 'max-content'}" nzTableLayout="fixed" [nzShowPagination]="false"
+      [nzFrontPagination]="false" #headerTable [nzData]="paginationResult.data">
+      <thead>
+        <tr>
+          <th nzAlign="center" nzWidth="30px">STT</th>
+          <th nzAlign="center" nzWidth="150px">Mã Phiếu</th>
+          <th nzAlign="center" nzWidth="200px">Tên</th>
+          <th nzAlign="center"  nzWidth="120px" >Trạng thái</th>
+          <th nzAlign="center"  nzWidth="120px"  >Người tạo</th>
+          <th nzAlign="center"  nzWidth="150px" >Ngày tạo phiếu</th>
+          <th nzAlign="center" nzWidth="120px" >Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of headerTable.data; let i = index" (dblclick)="openEdit(data)">
+          <td nzAlign="center">{{ (paginationResult.currentPage - 1) * paginationResult.pageSize + i + 1 }}</td>
+          <td nzAlign="center">
+            <a (click)="openEdit(data)">{{ data.id }}</a>
+          </td>
+          <td nzAlign="center">{{ data.name }}</td>
+          <td nzAlign="center">{{ data.status }}</td>
+          <td nzAlign="center">{{ data.createBy }}</td>
+          <td nzAlign="center">{{ data.createDate | date: 'dd/MM/yyyy' }}</td>
+          <td nzAlign="center">
+            <span nz-popconfirm nzPopconfirmTitle="Bạn muốn xoá phiếu nhập này ?" nzPopconfirmPlacement="bottom"
+              (nzOnConfirm)="deleteItem(data.code)" class="!text-red-500 cursor-pointer" nz-icon nzType="delete"
+              nzTheme="outline"></span>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </div>
+  <div *ngIf="paginationResult?.data" class="flex justify-end p-[10px] border-t border-custom-gray border-solid">
+    <nz-pagination nzShowSizeChanger [nzPageIndex]="filter.currentPage" [nzTotal]="paginationResult.totalRecord"
+      [nzPageSize]="filter.pageSize" (nzPageIndexChange)="pageIndexChange($event)"
+      (nzPageSizeChange)="pageSizeChange($event)"></nz-pagination>
+  </div>
+</div>
+
+<!--Create Update-->
+<nz-drawer [nzMask]="!edit" nzWidth="90vw" [nzVisible]="visible" nzPlacement="right"
+  [nzTitle]="edit ? ' Chỉnh sửa  ' : ' Tạo mới  '" [nzExtra]="extra" (nzOnClose)="close()">
+  <ng-container *nzDrawerContent>
+
+    <div nz-row nzGutter="24">
+      <!-- Phiếu xuất -->
+      <div nz-col nzSpan="11"
+        style="padding: 12px; border: solid 1px #eeeeee; margin: 8px; border-radius: 5px; margin-left: 24px;">
+        <nz-divider nzText="THÔNG TIN PHIẾU XUẤT" nzOrientation="left"></nz-divider>
+        <form nz-form nzLayout="vertical" [formGroup]="validateForm" (ngSubmit)="submitForm()">
+          <div nz-row nzGutter="16">
+            <div nz-col class="gutter-row" [nzSpan]="8">
+              <!-- <label>Mã Phiếu</label>
+              <input style="margin: 8px 0px;" nz-input placeholder="AX_00" [(ngModel)]="value" [disabled]="true" /> -->
+              <app-input-clear placeholder="Mã tự sinh" [required]="true" label="Mã phiếu"
+                [control]="$any(validateForm).controls['id']" [required]="true" [disabled]="true"
+                ></app-input-clear>
+            </div>
+            <div nz-col class="gutter-row" [nzSpan]="8">
+              <app-input-clear placeholder="Nhập tên phiếu" [required]="true" label="Tên phiếu"
+              [control]="$any(validateForm).controls['name']" [required]="true"
+              ></app-input-clear>
+            </div>
+            <div nz-col class="gutter-row" [nzSpan]="8">
+              <app-input-clear placeholder="Khởi tạo" [required]="true" label="Trạng thái"
+              [control]="$any(validateForm).controls['status']" [required]="true" [disabled]="true"
+              ></app-input-clear>
+            </div>
+          </div>
+          <div nz-row nzGutter="16">
+            <div nz-col class="gutter-row" [nzSpan]="24">
+              <app-input-clear placeholder="Địa chỉ giao hàng" [required]="true" label="Địa chỉ"
+              [control]="$any(validateForm).controls['address']" [required]="true"
+              ></app-input-clear>
+            </div>
+          
+          </div>
+
+          <app-input-clear [textArea]="true" class="full-width" placeholder="Nhập ghi chú...." label="ghi chú"
+          [control]="$any(validateForm).controls['note']"></app-input-clear>
+        </form>
+        <label style="margin: 8px 0px;">Thông tin hàng hóa</label>
+        <nz-table  #selectedTable [nzData]="selectedProducts">
+          <thead>
+            <tr>
+              <th nzAlign="center">STT</th>
+              <th nzAlign="center">TÊN</th>
+              <th nzAlign="center">LOẠI</th>
+              <th nzAlign="center">SỐ LƯỢNG</th>
+              <th nzAlign="center">ĐƠN GIÁ</th>
+              <th nzAlign="center">THAO TÁC</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let data of selectedProducts; let i = index">
+              <td nzAlign="center">{{i+1}}</td>
+              <td nzAlign="center">{{ data.name }}</td>
+              <td nzAlign="center">{{ data.type }}</td>
+              <td nzAlign="center">
+                <nz-input-group nzCompact>
+                  <button nz-button (click)="onQuantityChange(data, -1)" [disabled]="data.quantity <= 1">
+                    <i nz-icon nzType="minus"></i>
                   </button>
-                </td>
-              </tr>
-            </tbody>
-          </nz-table>
-        </div>
-      
-        <!-- Danh sách hàng hóa -->
-        <div nz-col nzSpan="12">
-          <nz-divider nzText="THÔNG TIN HÀNG HÓA" nzOrientation="left"></nz-divider>
-          <nz-table #basicTable [nzData]="lstProduct">
-            <thead>
-              <tr>
-                <th nzAlign="center">STT</th>
-                <th nzAlign="center">TÊN</th>
-                <th nzAlign="center">LOẠI</th>
-                <th nzAlign="center">SỐ LƯỢNG</th>
-                <th nzAlign="center">ĐƠN VỊ TÍNH</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let data of lstProduct; let i = index"
-                  (dblclick)="onProductDoubleClick(data)"
-                  style="cursor: pointer;">
-                <td nzAlign="center">{{i+1}}</td>
-                <td nzAlign="center">{{ data.name }}</td>
-                <td nzAlign="center">{{ data.type }}</td>
-                <td nzAlign="center">{{ data.stock }}</td>
-                <td nzAlign="center">{{ data.currency }}</td>
-              </tr>
-            </tbody>
-          </nz-table>
-        </div>
-        <div nz-col nzSpan="24" style="margin: 12px;">
-          <button nz-button nzType="primary" style=" background-color: #008B45; 
-          border-color: #008B45;" class="!flex !items-center">
-            <span nz-icon nzType="plus-circle" nzTheme="outline"></span>Thêm phiếu xuất</button>
-        </div>
+                  <input nz-input type="number" [(ngModel)]="data.quantity" style="width: 50px; text-align: center;"
+                    [max]="data.stock" [min]="1">
+                  <button nz-button (click)="onQuantityChange(data, 1)" [disabled]="data.quantity >= data.stock">
+                    <i nz-icon nzType="plus-circle"></i>
+                  </button>
+                </nz-input-group>
+              </td>
+              <td nzAlign="center">{{ data.sellingPrice }}</td>
+              <td nzAlign="center">
+                <button nz-button nzType="link" nzDanger (click)="removeProduct(i)">
+                  <i nz-icon nzType="delete"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </nz-table>
+
       </div>
-    </ng-container>
-  </nz-drawer>
-  <ng-template #extra>
-    <nz-space>
-      <ng-container *ngIf="edit">
-        <button [nzLoading]="loading" *nzSpaceItem nz-button nzType="primary"
-          class="!flex !items-center" (click)="submitForm()">
-          <span nz-icon nzType="save" nzTheme="outline"></span>Lưu
-        </button>
-      </ng-container>
-      <ng-container *ngIf="!edit">
-        <button [nzLoading]="loading" *nzSpaceItem nz-button nzType="primary" class="!flex !items-center"
-          (click)="submitForm()">
-          <span nz-icon nzType="save" nzTheme="outline"></span>Lưu
-        </button>
-      </ng-container>
-      <button *nzSpaceItem nz-button nzType="default" nzType="primary" class="!flex !items-center" nzDanger
-        (click)="close()">
-        <span nz-icon nzType="close-circle" nzTheme="outline"></span>Huỷ
+
+      <!-- Danh sách hàng hóa -->
+      <div nz-col nzSpan="11"
+        style="padding: 12px; border: solid 1px #eeeeee; margin: 8px; border-radius: 5px; margin-left: 24px;">
+        <nz-divider nzText="DANH SÁCH HÀNG HÓA CÓ SẴN" nzOrientation="left"></nz-divider>
+        <nz-input-group [nzSuffix]="suffixIconSearch">
+          <input type="text" nz-input placeholder="Tìm kiếm thông tin hàng hóa" />
+        </nz-input-group>
+        <ng-template #suffixIconSearch>
+          <span nz-icon nzType="search"></span>
+        </ng-template>
+        <br>
+        <br>
+        <nz-table  #basicTable [nzData]="lstProduct">
+          <thead>
+            <tr>
+              <th nzAlign="center">STT</th>
+              <th nzAlign="center">TÊN</th>
+              <th nzAlign="center">LOẠI</th>
+              <th nzAlign="center">SỐ LƯỢNG</th>
+
+              <th nzAlign="center">ĐƠN GIÁ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let data of lstProduct; let i = index" (dblclick)="onProductDoubleClick(data)"
+              style="cursor: pointer;">
+              <td nzAlign="center">{{i+1}}</td>
+              <td nzAlign="center">{{ data.name }}</td>
+              <td nzAlign="center">{{ data.type }}</td>
+              <td nzAlign="center">{{ data.stock }}</td>
+
+              <td nzAlign="center">{{ data.sellingPrice }}</td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </div>
+      <div nz-col nzSpan="24" style="margin: 12px;">
+        <span nz-icon nzType="money-collect" nzTheme="outline"></span>
+        Thành tiền: {{ totalAmount | number:'1.0-0' }} VNĐ
+      </div>
+
+      <!-- <div nz-col nzSpan="24" style="margin: 12px;">
+        <button nz-button nzType="primary" style=" background-color: #008B45; 
+          border-color: #008B45;" class="!flex !items-center" (ckick)="submitForm()">
+          <span nz-icon nzType="plus-circle" nzTheme="outline"></span>Thêm phiếu xuất</button>
+      </div> -->
+    </div>
+  </ng-container>
+</nz-drawer>
+<ng-template #extra>
+  <nz-space>
+    <ng-container *ngIf="edit">
+      <button [nzLoading]="loading" style=" background-color: #008B45; 
+          border-color: #008B45;" *nzSpaceItem nz-button nzType="primary" class="!flex !items-center"
+        (click)="submitForm()">
+        <span nz-icon nzType="save" nzTheme="outline"></span>Thêm phiếu xuất
       </button>
-    </nz-space>
-  </ng-template>
+    </ng-container>
+    <ng-container *ngIf="!edit">
+      <button [nzLoading]="loading" style=" background-color: #008B45; 
+      border-color: #008B45;" *nzSpaceItem nz-button nzType="primary" class="!flex !items-center"
+    (click)="submitForm()">
+    <span nz-icon nzType="save" nzTheme="outline"></span>Thêm phiếu xuất
+  </button>
+    </ng-container>
+    <button *nzSpaceItem nz-button nzType="default" nzType="primary" class="!flex !items-center" nzDanger
+      (click)="close()">
+      <span nz-icon nzType="close-circle" nzTheme="outline"></span>Huỷ
+    </button>
+  </nz-space>
+</ng-template>

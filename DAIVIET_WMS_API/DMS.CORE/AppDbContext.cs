@@ -152,6 +152,7 @@ namespace DMS.CORE
         public DbSet<tblBuOpinionList> TblBuOpinionLists { get; set; }
         public DbSet<TblBuListTables> TblBuListTables { get; set; }
         public DbSet<TblBuImport> TblBuImport { get; set;}
+        public DbSet<TblBuTicketDetails> TblBuTicketDetails { get; set; }
         #endregion
     }
 }

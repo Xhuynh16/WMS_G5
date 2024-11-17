@@ -34,6 +34,23 @@ namespace DMS.API.Controllers.BU
             }
             return Ok(transferObject);
         }
+        [HttpGet("SearchEX")]
+        public async Task<IActionResult> SearchEx([FromQuery] BaseFilter filter)
+        {
+            var transferObject = new TransferObject();
+            var result = await _service.SearchEx(filter);
+            if (_service.Status)
+            {
+                transferObject.Data = result;
+            }
+            else
+            {
+                transferObject.Status = false;
+                transferObject.MessageObject.MessageType = MessageType.Error;
+                transferObject.GetMessage("0001", _service);
+            }
+            return Ok(transferObject);
+        }
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll([FromQuery] BaseMdFilter filter)
         {
@@ -73,6 +90,26 @@ namespace DMS.API.Controllers.BU
             }
             return Ok(transferObject);
         }
+        [HttpPost("Create")]
+        public async Task<IActionResult> CreateImport([FromBody] ImportDto import)
+        {
+            var transferObject = new TransferObject();
+            var result = await _service.CreateImportAndDetails(import);
+                if (_service.Status)
+                {
+                    transferObject.Data = result;
+                    transferObject.Status = true;
+                    transferObject.MessageObject.MessageType = MessageType.Success;
+                    transferObject.GetMessage("0100", _service);  // Import thành công
+                }
+                else
+                {
+                    transferObject.Status = false;
+                    transferObject.MessageObject.MessageType = MessageType.Error;
+                    transferObject.GetMessage("0101", _service);  // Import thất bại
+                }
+                return Ok(transferObject);                
+        }
 
         [HttpPut("Update")]
         public async Task<IActionResult> Update([FromBody] ImportDto import)
@@ -81,6 +118,43 @@ namespace DMS.API.Controllers.BU
             await _service.Update(import);
             if (_service.Status)
             {
+                transferObject.Status = true;
+                transferObject.MessageObject.MessageType = MessageType.Success;
+                transferObject.GetMessage("0103", _service);
+            }
+            else
+            {
+                transferObject.Status = false;
+                transferObject.MessageObject.MessageType = MessageType.Error;
+                transferObject.GetMessage("0104", _service);
+            }
+            return Ok(transferObject);
+        }
+        [HttpGet("GetListTicketDetails/{id}")]
+        public async Task<IActionResult> GetListTicketDetails([FromRoute] string id)
+        {
+            var transferObject = new TransferObject();
+            var result = await _service.getListImportAndDetails(id);
+            if (_service.Status)
+            {
+                transferObject.Data = result;
+            }
+            else
+            {
+                transferObject.Status = false;
+                transferObject.MessageObject.MessageType = MessageType.Error;
+                transferObject.GetMessage("0001", _service);
+            }
+            return Ok(transferObject);
+        }
+        [HttpPut("UpdateTicket")]
+        public async Task<IActionResult> UpdateImport([FromBody] ImportDto dto)
+        {
+            var transferObject = new TransferObject();
+            var data = await _service.UpdateImport(dto);
+            if (_service.Status)
+            {
+                transferObject.Data = data;
                 transferObject.Status = true;
                 transferObject.MessageObject.MessageType = MessageType.Success;
                 transferObject.GetMessage("0103", _service);

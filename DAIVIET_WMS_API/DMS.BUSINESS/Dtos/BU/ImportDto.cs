@@ -13,10 +13,13 @@ namespace DMS.BUSINESS.Dtos.BU
     public class ImportDto : BaseMdTemDto, IMapFrom, IDto
     {
         [Key]
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string Status { get; set; }
-        public string ProductCode { get; set; }
+        public string? Id { get; set; }
+        public string? Name { get; set; }
+        public string? Status { get; set; }
+        public string? Address { get; set; }
+        public string? Type { get; set; }
+        public string? Note { get; set; }
+        public List<TblBuTicketDetails>? Details { get; set; }
         public void Mapping(Profile profile)
         {
             profile.CreateMap<TblBuImport, ImportDto>().ReverseMap();

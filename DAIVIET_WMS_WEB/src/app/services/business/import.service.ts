@@ -11,17 +11,23 @@ export class ImportService {
   searchImport(params: any): Observable<any> {
     return this.commonService.get('Import/Search', params);
   }
+  searchEx(params: any): Observable<any> {
+    return this.commonService.get('Import/SearchEX', params);
+  }
 
   getall(): Observable<any> {
     return this.commonService.get('Import/GetAll');
   }
+  getDataDetails(id: string): Observable<any> {
+    return this.commonService.get(`Import/GetListTicketDetails/${id}`);
+  }
 
   createImport(params: any): Observable<any> {
-    return this.commonService.post('Import/Insert', params);
+    return this.commonService.post('Import/Create', params);
   }
 
   updateImport(params: any): Observable<any> {
-    return this.commonService.put('Import/Update', params);
+    return this.commonService.put('Import/UpdateTicket', params);
   }
 
   exportExcelImport(params: any): Observable<any> {

@@ -7,13 +7,12 @@ import { PaginationResult } from '../../models/base.model';
 import { FormGroup, Validators, NonNullableFormBuilder } from '@angular/forms';
 import { DropdownService } from '../../services/dropdown/dropdown.service';
 
-
 @Component({
   selector: 'app-product',
   standalone: true,
   imports: [ShareModule],
   templateUrl: './product.component.html',
-  styleUrl: './product.component.scss'
+  styleUrls: ['./product.component.scss']
 })
 export class ProductComponent {
   validateForm: FormGroup = this.fb.group({
@@ -22,6 +21,11 @@ export class ProductComponent {
     type: ['', [Validators.required]],
     stock: ['', [Validators.required]],
     currency: ['', [Validators.required]],
+    basePrice: ['', [Validators.required, Validators.min(0)]],
+    sellingPrice: ['', [Validators.required, Validators.min(0)]],
+    minQuantity: ['', [Validators.required, Validators.min(1)]],
+    maxQuantity: ['', [Validators.required, Validators.min(1)]],
+    description: ['', [Validators.maxLength(255)]],
     isActive: [true, [Validators.required]],
   });
 
@@ -33,6 +37,7 @@ export class ProductComponent {
   loading: boolean = false;
   optionsType: any[] = [];
   optionsCurrency: any[] = [];
+  
   constructor(
     private _service: ProductService,
     private fb: NonNullableFormBuilder,
@@ -48,10 +53,6 @@ export class ProductComponent {
     this.globalService.getLoading().subscribe((value) => {
       this.loading = value;
     });
-  }
-
-  ngOnDestroy() {
-    this.globalService.setBreadcrumb([]);
   }
 
   ngOnInit(): void {
@@ -71,11 +72,10 @@ export class ProductComponent {
 
   search() {
     this.isSubmit = false;
-    console.log(this.filter)
+    console.log(this.filter);
     this._service.searchProduct(this.filter).subscribe({
       next: (data) => {
         this.paginationResult = data;
-
       },
       error: (response) => {
         console.log(response);
@@ -86,30 +86,30 @@ export class ProductComponent {
   getListType() {
     this.dropDownService.getAllCurrency().subscribe({
       next: (data) => {
-        this.optionsType = data
+        this.optionsType = data;
       },
       error: (response) => {
-        console.log(response)
+        console.log(response);
       },
-    })
+    });
   }
+
   getListCurrency() {
     this.dropDownService.getAllUnit().subscribe({
       next: (data) => {
-        this.optionsCurrency = data
+        this.optionsCurrency = data;
       },
       error: (response) => {
-        console.log(response)
+        console.log(response);
       },
-    })
+    });
   }
-
 
   exportExcel() {
     return this._service.exportExcelProduct(this.filter).subscribe((result: Blob) => {
       const blob = new Blob([result], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       const url = window.URL.createObjectURL(blob);
-      var anchor = document.createElement('a');
+      const anchor = document.createElement('a');
       anchor.download = 'danh-sach-hang-hoa.xlsx';
       anchor.href = url;
       anchor.click();
@@ -121,7 +121,7 @@ export class ProductComponent {
     if (this.validateForm.valid) {
       if (this.edit) {
         this._service.updateProduct(this.validateForm.getRawValue()).subscribe({
-          next: (data) => {
+          next: () => {
             this.search();
           },
           error: (response) => {
@@ -132,7 +132,7 @@ export class ProductComponent {
         const formValue = this.validateForm.getRawValue();
         delete formValue.id;
         this._service.createProduct(formValue).subscribe({
-          next: (data) => {
+          next: () => {
             this.search();
           },
           error: (response) => {
@@ -172,7 +172,7 @@ export class ProductComponent {
 
   deleteItem(id: string | number) {
     this._service.deleteProduct(id).subscribe({
-      next: (data) => {
+      next: () => {
         this.search();
       },
       error: (response) => {
@@ -181,13 +181,18 @@ export class ProductComponent {
     });
   }
 
-  openEdit(data: { code: string; name: string; type: string; stock: string; currency: string, isActive: boolean }) {
+  openEdit(data: { code: string; name: string; type: string; stock: string; currency: string; basePrice: number; sellingPrice: number; minQuantity: number; maxQuantity: number; description: string; isActive: boolean }) {
     this.validateForm.setValue({
       code: data.code,
       name: data.name,
       type: data.type,
       stock: data.stock,
       currency: data.currency,
+      basePrice: data.basePrice,
+      sellingPrice: data.sellingPrice,
+      minQuantity: data.minQuantity,
+      maxQuantity: data.maxQuantity,
+      description: data.description || '',
       isActive: data.isActive,
     });
     setTimeout(() => {

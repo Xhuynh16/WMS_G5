@@ -6,12 +6,10 @@
           <nz-space>
             <app-input-clear placeholder="Tìm kiếm" (enterEvent)="search()"
               [(value)]="filter.keyWord"></app-input-clear>
-            <button (click)="search()" class="flex !items-center !border-l-0 gray-btn" nzType="default" nz-button
-              nzType="default">
+            <button (click)="search()" class="flex !items-center !border-l-0 gray-btn" nzType="default" nz-button>
               <span nz-icon nzType="search"></span>
             </button>
-            <button (click)="reset()" class="flex !items-center !border-l-0 gray-btn" nzType="default" nz-button
-              nzType="default">
+            <button (click)="reset()" class="flex !items-center !border-l-0 gray-btn" nzType="default" nz-button>
               <span nz-icon nzType="redo"></span>
             </button>
           </nz-space>
@@ -26,37 +24,39 @@
     </nz-page-header>
   </div>
   <div class="overflow-auto flex-grow">
-    <nz-table [nzScroll]="{x: 'max-content'}" nzTableLayout="fixed" [nzShowPagination]="false"
+    <nz-table nzBordered="true" [nzScroll]="{x: 'max-content'}" nzTableLayout="fixed" [nzShowPagination]="false"
       [nzFrontPagination]="false" #headerTable [nzData]="paginationResult.data">
       <thead>
         <tr>
-          <th nzWidth="30px">STT</th>
-
-          <th [nzSortFn]="true" (nzSortOrderChange)="onSortChange('code', $event)" nzWidth="150px">Mã hàng hóa</th>
-          <th [nzSortFn]="true" (nzSortOrderChange)="onSortChange('name', $event)">Tên hàng hóa</th>
-          <th [nzSortFn]="true" (nzSortOrderChange)="onSortChange('type', $event)">Loại hàng hóa</th>
-          <th [nzSortFn]="true" (nzSortOrderChange)="onSortChange('stock', $event)">Số lượng</th>
-          <th [nzSortFn]="true" (nzSortOrderChange)="onSortChange('currency', $event)">Đơn vị tính</th>
-          <th [nzSortFn]="true" (nzSortOrderChange)="onSortChange('isActive', $event)" nzWidth="100px" nzAlign="center">
-            Trạng thái
-          </th>
+          <th nzWidth="30px" nzAlign="center">STT</th>
+          <th nzAlign="center" (nzSortOrderChange)="onSortChange('code', $event)" nzWidth="150px">Mã hàng hóa</th>
+          <th nzAlign="center" (nzSortOrderChange)="onSortChange('description', $event)">Mô tả</th>
+          <th nzAlign="center" (nzSortOrderChange)="onSortChange('name', $event)">Tên hàng hóa</th>
+          <th nzAlign="center" (nzSortOrderChange)="onSortChange('type', $event)">Loại hàng hóa</th>
+          <th nzAlign="center" (nzSortOrderChange)="onSortChange('stock', $event)">Số lượng</th>
+          <th nzAlign="center" (nzSortOrderChange)="onSortChange('currency', $event)">Đơn vị tính</th>
+          <th nzAlign="center" (nzSortOrderChange)="onSortChange('basePrice', $event)">Giá cơ bản</th>
+          <th nzAlign="center" (nzSortOrderChange)="onSortChange('sellingPrice', $event)">Giá bán</th>
+          <th nzAlign="center" (nzSortOrderChange)="onSortChange('minQuantity', $event)">Số lượng tối thiểu</th>
+          <th nzAlign="center" (nzSortOrderChange)="onSortChange('maxQuantity', $event)">Số lượng tối đa</th>
           <th nzWidth="120px" nzAlign="center">Hành động</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let data of headerTable.data; let i = index" (dblclick)="openEdit(data)">
-          <td>{{ (paginationResult.currentPage - 1) * paginationResult.pageSize + i + 1 }}</td>
-          <td>
+          <td nzAlign="center">{{ (paginationResult.currentPage - 1) * paginationResult.pageSize + i + 1 }}</td>
+          <td nzAlign="center">
             <a (click)="openEdit(data)">{{ data.code }}</a>
           </td>
-          <td>{{ data.name }}</td>
-          <td>{{ data.type }}</td>
-          <td>{{ data.stock }}</td>
-          <td>{{ data.currency }}</td>
-          <td nzAlign="center">
-            <span [ngClass]="data?.isActive ? '!text-green-500' : '!text-red-500'" nz-icon nzType="check-circle"
-              nzTheme="outline"></span>
-          </td>
+          <td nzAlign="center" >{{ data.description }}</td>
+          <td nzAlign="center" >{{ data.name }}</td>
+          <td nzAlign="center" >{{ data.type }}</td>
+          <td nzAlign="center" >{{ data.stock }}</td>
+          <td nzAlign="center" >{{ data.currency }}</td>
+          <td nzAlign="center" >{{ data.basePrice }}</td>
+          <td nzAlign="center" >{{ data.sellingPrice }}</td>
+          <td nzAlign="center" >{{ data.minQuantity }}</td>
+          <td nzAlign="center" >{{ data.maxQuantity }}</td>
           <td nzAlign="center">
             <span nz-popconfirm nzPopconfirmTitle="Bạn muốn xoá loại hàng hóa này ?" nzPopconfirmPlacement="bottom"
               (nzOnConfirm)="deleteItem(data.code)" class="!text-red-500 cursor-pointer" nz-icon nzType="delete"
@@ -74,17 +74,45 @@
 </div>
 
 <!--Create Update-->
-<nz-drawer [nzMask]="!edit" nzSize="default" [nzVisible]="visible" nzPlacement="right"
+<nz-drawer nzWidth="90vw" [nzMask]="!edit" nzSize="default" [nzVisible]="visible" nzPlacement="right"
   [nzTitle]="edit ? ' Chỉnh sửa  ' : ' Tạo mới  '" [nzExtra]="extra" (nzOnClose)="close()">
   <ng-container *nzDrawerContent>
     <form nz-form nzLayout="vertical" [formGroup]="validateForm" (ngSubmit)="submitForm()">
-      <app-input-clear placeholder="Nhập mã hàng hóa" [required]="true" label="Mã hàng hóa"
+    <div nz-row [nzGutter]="16">
+      <div  nz-col class="gutter-row" [nzSpan]="6">
+        <app-input-clear placeholder="Nhập mã hàng hóa" [required]="true" label="Mã hàng hóa"
         [control]="$any(validateForm).controls['code']" [required]="true"
         [disabled]="edit ? true : false"></app-input-clear>
-      <app-input-clear placeholder="Nhập tên hàng hóa" [required]="true" label="Tên hàng hóa"
+      </div>
+      <div  nz-col class="gutter-row" [nzSpan]="6">
+        <app-input-clear placeholder="Nhập mô tả hàng hóa" label="Mô tả"
+        [control]="$any(validateForm).controls['description']"></app-input-clear>
+      </div>
+      <div  nz-col class="gutter-row" [nzSpan]="6">
+        <app-input-clear placeholder="Nhập tên hàng hóa" [required]="true" label="Tên hàng hóa"
         [control]="$any(validateForm).controls['name']"></app-input-clear>
-      <app-input-clear placeholder="Nhập số lượng hàng hóa" [required]="true" label="Số lượng"
+      </div>
+      <div  nz-col class="gutter-row" [nzSpan]="6">
+        <app-input-clear placeholder="Nhập số lượng hàng hóa" [required]="true" label="Số lượng"
         [control]="$any(validateForm).controls['stock']"></app-input-clear>
+      </div>
+      <div  nz-col class="gutter-row" [nzSpan]="6">
+        <app-input-clear placeholder="Nhập giá cơ bản" label="Giá cơ bản"
+        [control]="$any(validateForm).controls['basePrice']"></app-input-clear>
+      </div>
+      <div  nz-col class="gutter-row" [nzSpan]="6">
+        <app-input-clear placeholder="Nhập giá bán" label="Giá bán"
+        [control]="$any(validateForm).controls['sellingPrice']"></app-input-clear>
+      </div>
+      <div  nz-col class="gutter-row" [nzSpan]="6">
+        <app-input-clear placeholder="Nhập số lượng tối thiểu" label="Số lượng tối thiểu"
+        [control]="$any(validateForm).controls['minQuantity']"></app-input-clear>
+      </div>
+      <div  nz-col class="gutter-row" [nzSpan]="6">
+        <app-input-clear placeholder="Nhập số lượng tối đa" label="Số lượng tối đa"
+        [control]="$any(validateForm).controls['maxQuantity']"></app-input-clear>
+      </div>
+    </div>
       <nz-form-item>
         <nz-form-label>Chọn loại hàng hóa</nz-form-label>
         <nz-form-control nzErrorTip="Không được để trống">
